@@ -12,7 +12,9 @@ models_path = Path('M:\OneDrive - University of Waterloo\Documents\modelling\dow
 downloads_path = Path('M:\Files\DL')
 
 def newest(path):
-    files = [file for file in os.listdir(path) if os.path.splitext(file)[1] in ('.zip', '.stl')]
+    files = [file for file in os.listdir(path)
+             if os.path.splitext(file)[1].lower()
+                in ('.zip', '.ZIP', '.stl', '.STL')]
     paths = [os.path.join(path, basename) for basename in files]
     return max(paths, key=os.path.getctime)
 
@@ -20,14 +22,19 @@ newest = newest(downloads_path)
 path, ext = os.path.splitext(newest)
 file = os.path.basename(path)
 
-print(path)
-print(ext)
-print(file)
+print(f'path: {path}')
+print(f'file: {file}')
 
-os.mkdir(models_path/file)
+try:
+    os.mkdir(models_path/file)
+except:
+    print(f'found existing dir {models_path/file}')
 
-if ext == '.stl':
-    copy(newest, models_path/file/newest)
+if ext.lower() == '.stl':
+    filebase = os.path.basename(newest)
+    print(f'models_path/file: {models_path/file}')
+    print(f'models_path/file/filebase: {models_path/file/filebase}')
+    copy(newest, models_path/file/filebase)
 else:
     with zipfile.ZipFile(newest) as zf:
         for i in zf.namelist():
